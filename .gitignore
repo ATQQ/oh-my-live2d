@@ -1,7 +1,16 @@
-**/build/**
-dist/
-dist-ssr/
-node_modules/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
 
 # Editor directories and files
 .vscode/*
@@ -13,16 +22,3 @@ node_modules/
 *.njsproj
 *.sln
 *.sw?
-
-.env
-*.local
-.cache
-**/.vitepress/cache/
-.temp
-
-# Logs
-logs
-*.log
-pnpm-debug.log*
-lerna-debug.log*
-tests/vite-app/public/models/
