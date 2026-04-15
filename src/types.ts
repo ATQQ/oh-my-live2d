@@ -55,6 +55,8 @@ export interface Widget {
   readonly l2d: L2D
   /** 切换到指定索引的模型（model 为数组时有效） */
   switchModel: (index: number) => Promise<void>
+  /** 隐藏模型，显示休息状态条；点击状态条可恢复 */
+  sleep: () => void
   /** 销毁 widget，退场动画完成后释放 WebGL 资源并移除 DOM */
   destroy: () => Promise<void>
 }

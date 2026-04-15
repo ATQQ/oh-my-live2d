@@ -101,7 +101,7 @@ export function createWidget(options: WidgetOptions): Widget {
 
   // 显示状态条，加载完成后同时隐藏状态条 + 触发 widget 入场
   function startLoading() {
-    statusBar.show();
+    statusBar.showLoading();
     l2dInstance.on('loaded', () => {
       statusBar.hide();
       applyStyle(container, useSlide, true);
@@ -130,6 +130,16 @@ export function createWidget(options: WidgetOptions): Widget {
 
   const widget: Widget = {
     get l2d() { return l2dInstance; },
+
+    sleep() {
+      applyStyle(container, useSlide, false);
+      canvas.style.pointerEvents = 'none';
+      statusBar.showRest(() => {
+        canvas.style.pointerEvents = 'auto';
+        statusBar.hide();
+        applyStyle(container, useSlide, true);
+      });
+    },
 
     async switchModel(index: number) {
       applyStyle(container, useSlide, false);

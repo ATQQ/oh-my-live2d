@@ -7,6 +7,7 @@ export default {
   run(): Widget {
     return createWidget({
       transitionType: 'fade',
+      position: 'bottom-right',
       model: [
         { path: 'https://model.hacxy.cn/cat-black/model.json' },
         { path: 'https://model.hacxy.cn/cat-white/model.json' },

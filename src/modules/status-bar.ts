@@ -9,7 +9,8 @@ function ensureSpinnerStyle() {
 
 export interface StatusBarHandle {
   el: HTMLElement
-  show: () => void
+  showLoading: () => void
+  showRest: (onWake: () => void) => void
   hide: () => void
   destroy: () => void
 }
@@ -25,6 +26,8 @@ export function createStatusBar(
   const isRight = position === 'bottom-right';
   const hiddenTransform = `translateY(50%) translateX(${isRight ? '100%' : '-100%'})`;
   const visibleTransform = 'translateY(50%) translateX(0)';
+
+  let wakeHandler: (() => void) | null = null;
 
   const bar = document.createElement('div');
   Object.assign(bar.style, {
@@ -48,6 +51,10 @@ export function createStatusBar(
     willChange: 'transform',
   });
 
+  bar.addEventListener('click', () => {
+    wakeHandler?.();
+  });
+
   const spinner = document.createElement('div');
   Object.assign(spinner.style, {
     width: '16px',
@@ -60,7 +67,6 @@ export function createStatusBar(
   });
 
   const text = document.createElement('span');
-  text.textContent = '正在加载';
   text.style.writingMode = 'vertical-rl';
 
   bar.appendChild(text);
@@ -68,12 +74,32 @@ export function createStatusBar(
 
   return {
     el: bar,
-    show() {
+
+    showLoading() {
+      text.textContent = '正在加载';
+      spinner.style.display = 'block';
+      bar.style.pointerEvents = 'none';
+      bar.style.cursor = 'default';
+      wakeHandler = null;
       bar.style.transform = visibleTransform;
     },
+
+    showRest(onWake: () => void) {
+      text.textContent = '正在休息';
+      spinner.style.display = 'none';
+      bar.style.pointerEvents = 'auto';
+      bar.style.cursor = 'pointer';
+      wakeHandler = onWake;
+      bar.style.transform = visibleTransform;
+    },
+
     hide() {
+      bar.style.pointerEvents = 'none';
+      bar.style.cursor = 'default';
+      wakeHandler = null;
       bar.style.transform = hiddenTransform;
     },
+
     destroy() {
       bar.remove();
     },

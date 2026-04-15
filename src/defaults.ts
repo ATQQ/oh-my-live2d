@@ -16,6 +16,14 @@ export function getDefaultItems(models: ModelOptions[]): MenuItem[] {
   }
 
   items.push({
+    icon: 'mdi:bed',
+    label: '休眠',
+    onClick(widget: Widget) {
+      widget.sleep();
+    },
+  });
+
+  items.push({
     icon: 'mdi:information-outline',
     label: 'About',
     onClick() {
