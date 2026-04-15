@@ -1,7 +1,7 @@
 {
   "extends": "@hacxy/tsconfig",
   "compilerOptions": {
-    "noEmit": true
+    "rootDir": "./src"
   },
   "include": ["src"]
 }
