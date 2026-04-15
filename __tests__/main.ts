@@ -3,14 +3,12 @@ import type { Widget } from 'l2d-widget';
 interface DemoModule {
   name?: string
   description?: string
-  run: (parentElement: HTMLElement) => Widget
+  run: () => Widget
 }
 
 const modules = import.meta.glob<DemoModule>('./demos/*.ts', { import: 'default' });
 
 let currentWidget: Widget | null = null;
-
-const mainEl = document.querySelector('main')!;
 
 function nameFromPath(path: string): string {
   return path.replace('./demos/', '').replace('.ts', '');
@@ -33,7 +31,7 @@ async function runDemo(path: string, load: () => Promise<DemoModule>, btn: HTMLB
   nameEl.textContent = mod.name ?? nameFromPath(path);
   descEl.textContent = mod.description ?? '';
 
-  currentWidget = mod.run(mainEl);
+  currentWidget = mod.run();
 }
 
 const list = document.getElementById('demo-list')!;

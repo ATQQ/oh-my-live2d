@@ -40,11 +40,11 @@ export interface WidgetOptions {
   position?: 'bottom-left' | 'bottom-right'
   /** canvas 尺寸（px），默认 300。传对象可分别指定宽高 */
   size?: number | { width: number, height: number }
-  /** 挂载的父元素，默认 document.body */
-  parentElement?: HTMLElement
+  /** 主题色，用于菜单、状态条等 UI 元素的背景色，默认浅蓝色 'rgba(96,165,250,0.9)' */
+  primaryColor?: string
   /** 滑入/滑出动画时长（ms），默认 1500 */
   transitionDuration?: number
-  /** 入场/退场动画类型。不传时自动决定：body 用 slide，自定义父元素用 fade */
+  /** 入场/退场动画类型，默认 'slide' */
   transitionType?: 'slide' | 'fade'
   /** 菜单配置 */
   menus?: MenusOptions

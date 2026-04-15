@@ -22,7 +22,7 @@ async function fetchIcon(iconId: string): Promise<string | null> {
   }
 }
 
-function createMenuButton(item: MenuItem, widget: Widget): HTMLButtonElement {
+function createMenuButton(item: MenuItem, widget: Widget, primaryColor: string): HTMLButtonElement {
   const btn = document.createElement('button');
   btn.title = item.label;
   btn.textContent = item.label;
@@ -32,27 +32,24 @@ function createMenuButton(item: MenuItem, widget: Widget): HTMLButtonElement {
     height: '28px',
     border: 'none',
     borderRadius: '50%',
-    background: 'rgba(255,255,255,0.85)',
-    backdropFilter: 'blur(4px)',
+    background: primaryColor,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '16px',
-    color: '#555',
+    color: 'rgba(255,255,255,0.75)',
     padding: '0',
     pointerEvents: 'auto',
-    transition: 'background 0.15s, color 0.15s',
+    transition: 'color 0.15s',
     flexShrink: '0',
   });
 
   btn.addEventListener('mouseenter', () => {
-    btn.style.background = 'rgba(255,255,255,1)';
-    btn.style.color = '#111';
+    btn.style.color = 'rgba(255,255,255,1)';
   });
   btn.addEventListener('mouseleave', () => {
-    btn.style.background = 'rgba(255,255,255,0.85)';
-    btn.style.color = '#555';
+    btn.style.color = 'rgba(255,255,255,0.75)';
   });
 
   btn.addEventListener('click', () => {
@@ -89,14 +86,15 @@ export interface MenuHandle {
 export function createMenu(
   items: MenuItem[],
   widget: Widget,
-  { align = 'right' }: { align?: 'left' | 'right' } = {},
+  { align = 'right', primaryColor }: { align?: 'left' | 'right', primaryColor: string },
 ): MenuHandle {
   const bar = document.createElement('div');
 
   Object.assign(bar.style, {
     position: 'absolute',
     [align]: '4px',
-    top: '4px',
+    top: '50%',
+    transform: 'translateY(-50%)',
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
@@ -108,7 +106,7 @@ export function createMenu(
   });
 
   for (const item of items) {
-    bar.appendChild(createMenuButton(item, widget));
+    bar.appendChild(createMenuButton(item, widget, primaryColor));
   }
 
   return {

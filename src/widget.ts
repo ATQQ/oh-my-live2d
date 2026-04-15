@@ -3,6 +3,7 @@ import type { MenusOptions, ModelOptions, Widget, WidgetOptions } from './types.
 import { init } from 'l2d';
 import { getDefaultItems } from './defaults.js';
 import { createMenu } from './modules/menu.js';
+import { createStatusBar } from './modules/status-bar.js';
 
 function resolveSize(size: number | { width: number, height: number }) {
   return typeof size === 'number' ? { width: size, height: size } : size;
@@ -57,25 +58,20 @@ export function createWidget(options: WidgetOptions): Widget {
   const {
     position = 'bottom-left',
     size = 300,
-    parentElement = document.body,
     transitionDuration = 1500,
     transitionType,
+    primaryColor = 'rgba(96,165,250,0.9)',
     menus: menusOptions,
   } = options;
 
   const models = Array.isArray(options.model) ? options.model : [options.model];
   const { width, height } = resolveSize(size);
+  const useSlide = transitionType !== 'fade';
 
-  const isBody = parentElement === document.body;
-  if (!isBody && getComputedStyle(parentElement).position === 'static') {
-    parentElement.style.position = 'relative';
-  }
-
-  const useSlide = transitionType ? transitionType === 'slide' : isBody;
-
+  // 容器：始终 fixed，挂载到 document.body
   const container = document.createElement('div');
   Object.assign(container.style, {
-    position: isBody ? 'fixed' : 'absolute',
+    position: 'fixed',
     bottom: '0',
     [position === 'bottom-right' ? 'right' : 'left']: '0',
     zIndex: '9999',
@@ -90,59 +86,78 @@ export function createWidget(options: WidgetOptions): Widget {
   canvas.height = height;
   Object.assign(canvas.style, { width: '100%', height: '100%', pointerEvents: 'auto' });
   container.appendChild(canvas);
-  parentElement.appendChild(container);
+  document.body.appendChild(container);
+
+  // 侧边状态条
+  const statusBar = createStatusBar(position, transitionDuration, height, primaryColor);
+  document.body.appendChild(statusBar.el);
 
   let l2dInstance = init(canvas);
-
-  function wireLoadedAnimation() {
-    l2dInstance.on('loaded', () => {
-      applyStyle(container, useSlide, true);
-    });
-  }
 
   function loadModel(index: number) {
     const m = models[index]!;
     return l2dInstance.load({ path: m.path, scale: m.scale, position: m.offset, volume: m.volume, logLevel: m.logLevel });
   }
 
-  wireLoadedAnimation();
+  // 显示状态条，加载完成后同时隐藏状态条 + 触发 widget 入场
+  function startLoading() {
+    statusBar.show();
+    l2dInstance.on('loaded', () => {
+      statusBar.hide();
+      applyStyle(container, useSlide, true);
+    });
+  }
+
+  startLoading();
   void loadModel(0);
 
-  // menu 先声明，widget 对象在 destroy 中引用它，createMenu 在 widget 之后赋值
   let menu: MenuHandle;
   let cancelHover: () => void;
+
+  // slide 模式用 transitionend（transform 过渡稳定），fade 模式用 setTimeout
+  // （含 WebGL canvas 的容器 opacity 过渡不触发 transitionend）
+  function waitExit(): Promise<void> {
+    return useSlide
+      ? new Promise<void>(resolve => {
+        container.addEventListener('transitionend', () => {
+          resolve();
+        }, { once: true });
+      })
+      : new Promise<void>(resolve => {
+        setTimeout(resolve, transitionDuration);
+      });
+  }
 
   const widget: Widget = {
     get l2d() { return l2dInstance; },
 
     async switchModel(index: number) {
       applyStyle(container, useSlide, false);
+      await waitExit();
       const waitDestroy = new Promise<void>(r => {
         l2dInstance.on('destroy', r);
       });
       l2dInstance.destroy();
       await waitDestroy;
       l2dInstance = init(canvas);
-      wireLoadedAnimation();
+      startLoading();
       await loadModel(index);
     },
 
     async destroy() {
       cancelHover();
       menu.destroy();
+      statusBar.destroy();
       applyStyle(container, useSlide, false);
-      await new Promise<void>(resolve => {
-        container.addEventListener('transitionend', () => {
-          resolve();
-        }, { once: true });
-      });
+      await waitExit();
       l2dInstance.destroy();
-      parentElement.removeChild(container);
+      document.body.removeChild(container);
     },
   };
 
   menu = createMenu(resolveMenuItems(models, menusOptions), widget, {
     align: menusOptions?.align,
+    primaryColor,
   });
   container.appendChild(menu.el);
   cancelHover = setupMenuHover(canvas, menu);

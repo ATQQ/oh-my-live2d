@@ -11,118 +11,103 @@
         padding: 0;
       }
 
-      html,
       body {
-        height: 100%;
-      }
-
-      body {
-        display: flex;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        color: #333;
-        background: #f7f7f7;
-      }
-
-      /* ── Sidebar ── */
-      .sidebar {
-        width: 220px;
-        min-height: 100%;
-        background: #fff;
-        border-right: 1px solid #e5e5e5;
+        background: #1a1a1a;
+        color: #ccc;
+        min-height: 100vh;
         display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        padding: 24px 0;
+        justify-content: center;
       }
 
-      .sidebar-title {
-        font-size: 15px;
+      main {
+        width: 100%;
+        max-width: 720px;
+        padding: 72px 40px;
+        text-align: center;
+      }
+
+      .page-title {
+        font-size: 18px;
         font-weight: 700;
-        padding: 0 20px 16px;
-        border-bottom: 1px solid #f0f0f0;
-        margin-bottom: 12px;
+        color: #eee;
+        margin-bottom: 32px;
+        letter-spacing: 0.02em;
       }
 
-      .sidebar-title span {
+      .page-title span {
         font-weight: 400;
-        color: #aaa;
-        font-size: 12px;
+        color: #555;
+        font-size: 14px;
         margin-left: 6px;
       }
 
+      /* ── Demo 切换按钮 ── */
       #demo-list {
         display: flex;
         flex-direction: column;
         gap: 2px;
-        padding: 0 8px;
+        margin-bottom: 48px;
       }
 
       .demo-btn {
-        text-align: left;
-        padding: 8px 12px;
+        padding: 8px 16px;
         border: none;
         background: none;
         border-radius: 6px;
         font-size: 13px;
-        color: #555;
+        color: #888;
         cursor: pointer;
+        text-align: left;
         transition:
           background 0.1s,
           color 0.1s;
       }
 
       .demo-btn:hover {
-        background: #f5f5f5;
-        color: #111;
+        background: #2a2a2a;
+        color: #ddd;
       }
 
       .demo-btn.active {
-        background: #eef2ff;
-        color: #4f46e5;
+        background: #1e1b4b;
+        color: #818cf8;
         font-weight: 500;
       }
 
       .empty {
-        font-size: 12px;
-        color: #bbb;
-        padding: 8px 12px;
+        font-size: 13px;
+        color: #444;
       }
 
-      /* ── Main ── */
-      .main {
-        flex: 1;
-        padding: 40px 48px;
-      }
-
+      /* ── 当前 Demo 信息 ── */
       #demo-name {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
-        margin-bottom: 8px;
+        color: #eee;
+        margin-bottom: 10px;
       }
 
       #demo-desc {
         font-size: 14px;
-        color: #888;
-        line-height: 1.6;
+        color: #555;
+        line-height: 1.7;
       }
 
       .hint {
-        margin-top: 48px;
+        margin-top: 64px;
         font-size: 12px;
-        color: #ccc;
+        color: #333;
       }
     </style>
   </head>
   <body>
-    <aside class="sidebar">
-      <div class="sidebar-title">l2d-widget <span>demos</span></div>
+    <main>
+      <div class="page-title">l2d-widget <span>demos</span></div>
       <div id="demo-list"></div>
-    </aside>
-
-    <main class="main">
       <div id="demo-name"></div>
       <div id="demo-desc"></div>
-      <p class="hint">Live2D 模型展示在页面角落 · 修改 src/ 或 demos/ 后热更新自动生效</p>
+      <p class="hint">修改 src/ 或 demos/ 后热更新自动生效</p>
     </main>
 
     <script type="module" src="./main.ts"></script>

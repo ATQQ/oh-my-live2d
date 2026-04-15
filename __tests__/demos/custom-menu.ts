@@ -4,9 +4,8 @@ import { createWidget } from 'l2d-widget';
 export default {
   name: 'Custom Menu',
   description: 'menus.extraItems 在默认菜单末尾追加自定义按钮',
-  run(parentElement: HTMLElement): Widget {
+  run(): Widget {
     return createWidget({
-      transitionType: 'slide',
       model: {
         path: 'https://model.hacxy.cn/cat-black/model.json',
       },
@@ -25,7 +24,6 @@ export default {
           },
         ],
       },
-      parentElement,
     });
   },
 };

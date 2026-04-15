@@ -4,13 +4,11 @@ import { createWidget } from 'l2d-widget';
 export default {
   name: 'Basic',
   description: '最小配置，模型展示在左下角（默认）',
-  run(parentElement: HTMLElement): Widget {
+  run(): Widget {
     return createWidget({
       model: {
         path: 'https://model.hacxy.cn/cat-black/model.json',
       },
-      transitionType: 'slide',
-      parentElement,
     });
   },
 };
