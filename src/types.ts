@@ -13,9 +13,29 @@ export interface ModelOptions {
   logLevel?: 'error' | 'warn' | 'info' | 'trace'
 }
 
+export interface MenuItem {
+  /**
+   * Iconify 图标名称，如 "mdi:shuffle-variant"
+   * @see https://icon-sets.iconify.design/
+   */
+  icon?: string
+  /** 无障碍标题，图标加载失败时作为按钮文本回退 */
+  label: string
+  onClick: (widget: Widget) => void
+}
+
+export interface MenusOptions {
+  /** 完全替换默认菜单项（提供时 extraItems 被忽略） */
+  items?: MenuItem[]
+  /** 追加到默认菜单末尾 */
+  extraItems?: MenuItem[]
+  /** 菜单对齐方式，默认 'right' */
+  align?: 'left' | 'right'
+}
+
 export interface WidgetOptions {
-  /** 模型配置 */
-  model: ModelOptions
+  /** 模型配置，传数组时支持多模型切换 */
+  model: ModelOptions | ModelOptions[]
   /** 展示位置，默认 'bottom-left' */
   position?: 'bottom-left' | 'bottom-right'
   /** canvas 尺寸（px），默认 300。传对象可分别指定宽高 */
@@ -26,11 +46,15 @@ export interface WidgetOptions {
   transitionDuration?: number
   /** 入场/退场动画类型。不传时自动决定：body 用 slide，自定义父元素用 fade */
   transitionType?: 'slide' | 'fade'
+  /** 菜单配置 */
+  menus?: MenusOptions
 }
 
 export interface Widget {
-  /** 底层 l2d 实例，供高级用途 */
+  /** 底层 l2d 实例，供高级用途（model 切换后自动更新） */
   readonly l2d: L2D
-  /** 销毁 widget，滑出动画完成后释放 WebGL 资源并移除 DOM */
+  /** 切换到指定索引的模型（model 为数组时有效） */
+  switchModel: (index: number) => Promise<void>
+  /** 销毁 widget，退场动画完成后释放 WebGL 资源并移除 DOM */
   destroy: () => Promise<void>
 }

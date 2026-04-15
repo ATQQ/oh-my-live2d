@@ -24,6 +24,7 @@ async function runDemo(path: string, load: () => Promise<DemoModule>, btn: HTMLB
     b.classList.remove('active');
   });
   btn.classList.add('active');
+  location.hash = nameFromPath(path);
 
   const mod = await load();
 
@@ -52,7 +53,13 @@ else {
     list.appendChild(btn);
   }
 
-  // 自动运行第一个
-  const [firstPath, firstLoad] = entries[0]!;
-  void runDemo(firstPath, firstLoad, list.querySelector('.demo-btn')!);
+  // 优先恢复 hash 对应的 demo，否则运行第一个
+  const hashName = location.hash.slice(1);
+  const initialIndex = hashName
+    ? entries.findIndex(([p]) => nameFromPath(p) === hashName)
+    : -1;
+  const targetIndex = initialIndex >= 0 ? initialIndex : 0;
+  const [targetPath, targetLoad] = entries[targetIndex]!;
+  const targetBtn = list.querySelectorAll<HTMLButtonElement>('.demo-btn')[targetIndex]!;
+  void runDemo(targetPath, targetLoad, targetBtn);
 }
