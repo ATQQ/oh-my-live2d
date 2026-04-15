@@ -10,6 +10,7 @@ export default {
         path: 'https://model.hacxy.cn/cat-black/model.json',
       },
       position: 'bottom-right',
+      transitionType: 'fade',
       parentElement,
     });
   },

@@ -9,6 +9,7 @@ export default {
       model: {
         path: 'https://model.hacxy.cn/cat-black/model.json',
       },
+      transitionType: 'slide',
       parentElement,
     });
   },

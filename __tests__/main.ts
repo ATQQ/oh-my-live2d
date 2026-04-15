@@ -17,7 +17,7 @@ function nameFromPath(path: string): string {
 }
 
 async function runDemo(path: string, load: () => Promise<DemoModule>, btn: HTMLButtonElement) {
-  currentWidget?.destroy();
+  void currentWidget?.destroy();
   currentWidget = null;
 
   document.querySelectorAll<HTMLButtonElement>('.demo-btn').forEach(b => {

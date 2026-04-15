@@ -22,11 +22,15 @@ export interface WidgetOptions {
   size?: number | { width: number, height: number }
   /** 挂载的父元素，默认 document.body */
   parentElement?: HTMLElement
+  /** 滑入/滑出动画时长（ms），默认 1500 */
+  transitionDuration?: number
+  /** 入场/退场动画类型。不传时自动决定：body 用 slide，自定义父元素用 fade */
+  transitionType?: 'slide' | 'fade'
 }
 
 export interface Widget {
   /** 底层 l2d 实例，供高级用途 */
   readonly l2d: L2D
-  /** 销毁 widget，释放 WebGL 资源并移除 DOM */
-  destroy: () => void
+  /** 销毁 widget，滑出动画完成后释放 WebGL 资源并移除 DOM */
+  destroy: () => Promise<void>
 }
