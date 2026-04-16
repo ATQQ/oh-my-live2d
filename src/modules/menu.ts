@@ -40,7 +40,6 @@ function createMenuButton(item: MenuItem, widget: Widget, primaryColor: string):
     fontSize: '16px',
     color: 'rgba(255,255,255,0.75)',
     padding: '0',
-    pointerEvents: 'auto',
     transition: 'color 0.15s',
     flexShrink: '0',
   });

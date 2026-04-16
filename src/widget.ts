@@ -134,6 +134,7 @@ export function createWidget(options: WidgetOptions): Widget {
     sleep() {
       applyStyle(container, useSlide, false);
       canvas.style.pointerEvents = 'none';
+      menu.hide();
       statusBar.showRest(() => {
         canvas.style.pointerEvents = 'auto';
         statusBar.hide();
