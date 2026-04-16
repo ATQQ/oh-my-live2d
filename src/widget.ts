@@ -1,9 +1,11 @@
 import type { MenuHandle } from './modules/menu.js';
-import type { MenusOptions, ModelOptions, Widget, WidgetOptions } from './types.js';
+import type { TipsHandle } from './modules/tips.js';
+import type { MenusOptions, ModelOptions, TipsOptions, Widget, WidgetOptions } from './types.js';
 import { init } from 'l2d';
 import { getDefaultItems } from './defaults.js';
 import { createMenu } from './modules/menu.js';
 import { createStatusBar } from './modules/status-bar.js';
+import { createTips } from './modules/tips.js';
 
 function resolveSize(size: number | { width: number, height: number }) {
   return typeof size === 'number' ? { width: size, height: size } : size;
@@ -28,6 +30,15 @@ function resolveMenuItems(models: ModelOptions[], opts: MenusOptions | undefined
   if (opts?.items)
     return opts.items;
   return [...getDefaultItems(models), ...(opts?.extraItems ?? [])];
+}
+
+function resolveTipsOptions(opts: TipsOptions | undefined) {
+  return {
+    welcomeMessage: opts?.welcomeMessage ?? '欢迎来访！',
+    messages: opts?.messages ?? ['记得多休息哦～', '有什么可以帮你的吗？', '今天也要开心哦！'],
+    duration: opts?.duration ?? 3000,
+    interval: opts?.interval ?? 5000,
+  };
 }
 
 function setupMenuHover(canvas: HTMLCanvasElement, menu: MenuHandle): () => void {
@@ -67,6 +78,7 @@ export function createWidget(options: WidgetOptions): Widget {
   const models = Array.isArray(options.model) ? options.model : [options.model];
   const { width, height } = resolveSize(size);
   const useSlide = transitionType !== 'fade';
+  const { welcomeMessage, messages: tipsMessages, duration: tipsDuration, interval: tipsInterval } = resolveTipsOptions(options.tips);
 
   // 容器：始终 fixed，挂载到 document.body
   const container = document.createElement('div');
@@ -88,34 +100,63 @@ export function createWidget(options: WidgetOptions): Widget {
   container.appendChild(canvas);
   document.body.appendChild(container);
 
-  // 侧边状态条
   const statusBar = createStatusBar(position, transitionDuration, height, primaryColor);
   document.body.appendChild(statusBar.el);
 
   let l2dInstance = init(canvas);
+
+  // 声明提前，让下方辅助函数可以安全引用
+  let menu: MenuHandle;
+  let tips: TipsHandle;
+  let cancelHover: () => void;
+  let welcomeTimer: ReturnType<typeof setTimeout> | undefined;
+  let tipsTimer: ReturnType<typeof setInterval> | undefined;
+  let msgIndex = 0;
+
+  function showTip(msg: string) {
+    tips.show(msg);
+    setTimeout(() => {
+      tips.hide();
+    }, tipsDuration);
+  }
+
+  function stopTipsLoop() {
+    clearTimeout(welcomeTimer);
+    clearInterval(tipsTimer);
+  }
+
+  function startTipsLoop() {
+    stopTipsLoop();
+    tipsTimer = setInterval(() => {
+      showTip(tipsMessages[msgIndex % tipsMessages.length]!);
+      msgIndex++;
+    }, tipsInterval);
+  }
+
+  function launchTips() {
+    welcomeTimer = setTimeout(() => {
+      showTip(welcomeMessage);
+      startTipsLoop();
+    }, transitionDuration);
+  }
 
   function loadModel(index: number) {
     const m = models[index]!;
     return l2dInstance.load({ path: m.path, scale: m.scale, position: m.offset, volume: m.volume, logLevel: m.logLevel });
   }
 
-  // 显示状态条，加载完成后同时隐藏状态条 + 触发 widget 入场
   function startLoading() {
     statusBar.showLoading();
     l2dInstance.on('loaded', () => {
       statusBar.hide();
       applyStyle(container, useSlide, true);
+      launchTips();
     });
   }
 
   startLoading();
   void loadModel(0);
 
-  let menu: MenuHandle;
-  let cancelHover: () => void;
-
-  // slide 模式用 transitionend（transform 过渡稳定），fade 模式用 setTimeout
-  // （含 WebGL canvas 的容器 opacity 过渡不触发 transitionend）
   function waitExit(): Promise<void> {
     return useSlide
       ? new Promise<void>(resolve => {
@@ -132,6 +173,8 @@ export function createWidget(options: WidgetOptions): Widget {
     get l2d() { return l2dInstance; },
 
     sleep() {
+      stopTipsLoop();
+      tips.hide();
       applyStyle(container, useSlide, false);
       canvas.style.pointerEvents = 'none';
       menu.hide();
@@ -139,10 +182,13 @@ export function createWidget(options: WidgetOptions): Widget {
         canvas.style.pointerEvents = 'auto';
         statusBar.hide();
         applyStyle(container, useSlide, true);
+        launchTips();
       });
     },
 
     async switchModel(index: number) {
+      stopTipsLoop();
+      tips.hide();
       applyStyle(container, useSlide, false);
       await waitExit();
       const waitDestroy = new Promise<void>(r => {
@@ -156,7 +202,9 @@ export function createWidget(options: WidgetOptions): Widget {
     },
 
     async destroy() {
+      stopTipsLoop();
       cancelHover();
+      tips.destroy();
       menu.destroy();
       statusBar.destroy();
       applyStyle(container, useSlide, false);
@@ -172,6 +220,9 @@ export function createWidget(options: WidgetOptions): Widget {
   });
   container.appendChild(menu.el);
   cancelHover = setupMenuHover(canvas, menu);
+
+  tips = createTips(primaryColor);
+  container.appendChild(tips.el);
 
   return widget;
 }

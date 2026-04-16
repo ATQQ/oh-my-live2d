@@ -33,6 +33,17 @@ export interface MenusOptions {
   align?: 'left' | 'right'
 }
 
+export interface TipsOptions {
+  /** 欢迎语，模型首次入场后显示，默认 '欢迎来访！' */
+  welcomeMessage?: string
+  /** 循环提示内容 */
+  messages?: string[]
+  /** 每条 tips 展示时长（ms），默认 3000 */
+  duration?: number
+  /** tips 循环间隔（ms），默认 5000 */
+  interval?: number
+}
+
 export interface WidgetOptions {
   /** 模型配置，传数组时支持多模型切换 */
   model: ModelOptions | ModelOptions[]
@@ -48,6 +59,8 @@ export interface WidgetOptions {
   transitionType?: 'slide' | 'fade'
   /** 菜单配置 */
   menus?: MenusOptions
+  /** tips 配置 */
+  tips?: TipsOptions
 }
 
 export interface Widget {
