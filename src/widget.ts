@@ -78,9 +78,7 @@ export function createWidget(options: WidgetOptions): Widget {
   const models = Array.isArray(options.model) ? options.model : [options.model];
   const { width, height } = resolveSize(size);
   const useSlide = transitionType !== 'fade';
-  const { welcomeMessages, messages: tipsMessages, duration: tipsDuration, interval: tipsInterval } = resolveTipsOptions(options.tips);
 
-  // 容器：始终 fixed，挂载到 document.body
   const container = document.createElement('div');
   Object.assign(container.style, {
     position: 'fixed',
@@ -105,37 +103,40 @@ export function createWidget(options: WidgetOptions): Widget {
 
   let l2dInstance = init(canvas);
 
-  // 声明提前，让下方辅助函数可以安全引用
   let menu: MenuHandle;
-  let tips: TipsHandle;
+  let tips: TipsHandle | undefined;
   let cancelHover: () => void;
   let welcomeTimer: ReturnType<typeof setTimeout> | undefined;
+  let showTipHideTimer: ReturnType<typeof setTimeout> | undefined;
   let tipsTimer: ReturnType<typeof setInterval> | undefined;
   let msgIndex = 0;
+  let currentModelTipsData = resolveTipsOptions(models[0]?.tips);
 
   function showTip(msg: string) {
-    tips.show(msg);
-    setTimeout(() => {
-      tips.hide();
-    }, tipsDuration);
+    tips?.show(msg, l2dInstance);
+    showTipHideTimer = setTimeout(() => {
+      tips?.hide();
+    }, currentModelTipsData.duration);
   }
 
   function stopTipsLoop() {
     clearTimeout(welcomeTimer);
+    clearTimeout(showTipHideTimer);
     clearInterval(tipsTimer);
   }
 
   function startTipsLoop() {
     stopTipsLoop();
     tipsTimer = setInterval(() => {
-      showTip(tipsMessages[msgIndex % tipsMessages.length]!);
+      showTip(currentModelTipsData.messages[msgIndex % currentModelTipsData.messages.length]!);
       msgIndex++;
-    }, tipsInterval);
+    }, currentModelTipsData.interval);
   }
 
   function launchTips() {
+    const msgs = currentModelTipsData.welcomeMessages;
     welcomeTimer = setTimeout(() => {
-      showTip(welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)]!);
+      showTip(msgs[Math.floor(Math.random() * msgs.length)]!);
       startTipsLoop();
     }, transitionDuration);
   }
@@ -145,7 +146,20 @@ export function createWidget(options: WidgetOptions): Widget {
     return l2dInstance.load({ path: m.path, scale: m.scale, position: m.offset, volume: m.volume, logLevel: m.logLevel });
   }
 
-  function startLoading() {
+  function startLoading(index: number) {
+    const model = models[index]!;
+    currentModelTipsData = resolveTipsOptions(model.tips);
+    msgIndex = 0;
+
+    // 重建 tips 元素以应用当前模型的配置（位置偏移、嘴型参数等）
+    tips?.destroy();
+    tips = createTips(primaryColor, {
+      offset: model.tips?.offset,
+      mouthParam: model.tips?.mouthParam,
+      typingSpeed: model.tips?.typingSpeed,
+    });
+    container.appendChild(tips.el);
+
     statusBar.showLoading();
     l2dInstance.on('loaded', () => {
       statusBar.hide();
@@ -154,7 +168,7 @@ export function createWidget(options: WidgetOptions): Widget {
     });
   }
 
-  startLoading();
+  startLoading(0);
   void loadModel(0);
 
   function waitExit(): Promise<void> {
@@ -174,7 +188,7 @@ export function createWidget(options: WidgetOptions): Widget {
 
     sleep() {
       stopTipsLoop();
-      tips.hide();
+      tips?.hide();
       applyStyle(container, useSlide, false);
       canvas.style.pointerEvents = 'none';
       menu.hide();
@@ -188,7 +202,7 @@ export function createWidget(options: WidgetOptions): Widget {
 
     async switchModel(index: number) {
       stopTipsLoop();
-      tips.hide();
+      tips?.hide();
       applyStyle(container, useSlide, false);
       await waitExit();
       const waitDestroy = new Promise<void>(r => {
@@ -197,14 +211,14 @@ export function createWidget(options: WidgetOptions): Widget {
       l2dInstance.destroy();
       await waitDestroy;
       l2dInstance = init(canvas);
-      startLoading();
+      startLoading(index);
       await loadModel(index);
     },
 
     async destroy() {
       stopTipsLoop();
       cancelHover();
-      tips.destroy();
+      tips?.destroy();
       menu.destroy();
       statusBar.destroy();
       applyStyle(container, useSlide, false);
@@ -220,9 +234,6 @@ export function createWidget(options: WidgetOptions): Widget {
   });
   container.appendChild(menu.el);
   cancelHover = setupMenuHover(canvas, menu);
-
-  tips = createTips(primaryColor, options.tips?.offset);
-  container.appendChild(tips.el);
 
   return widget;
 }

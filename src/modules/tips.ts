@@ -1,3 +1,5 @@
+import type { L2D } from 'l2d';
+
 function ensureTipsStyle() {
   if (document.getElementById('l2dw-tips-style'))
     return;
@@ -16,23 +18,35 @@ function ensureTipsStyle() {
   document.head.appendChild(style);
 }
 
+export interface TipsConfig {
+  offset?: { x?: number, y?: number }
+  /** 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y' */
+  mouthParam?: string
+  /** 打字速度（ms/字），默认 100 */
+  typingSpeed?: number
+}
+
 export interface TipsHandle {
   el: HTMLElement
-  show: (text: string) => void
+  show: (text: string, l2d?: L2D) => void
   hide: () => void
   destroy: () => void
 }
 
-export function createTips(primaryColor: string, offset?: { x?: number, y?: number }): TipsHandle {
+export function createTips(primaryColor: string, config?: TipsConfig): TipsHandle {
   ensureTipsStyle();
+
+  const { offset, mouthParam, typingSpeed = 100 } = config ?? {};
+  const ox = offset?.x ?? 0;
+  const oy = offset?.y ?? 0;
 
   let inTimer: ReturnType<typeof setTimeout> | undefined;
   let hideTimer: ReturnType<typeof setTimeout> | undefined;
+  let typeTimer: ReturnType<typeof setTimeout> | undefined;
+  let activeL2d: L2D | undefined;
 
   // 外层：只负责定位，不参与动画
   const outer = document.createElement('div');
-  const ox = offset?.x ?? 0;
-  const oy = offset?.y ?? 0;
   Object.assign(outer.style, {
     position: 'absolute',
     bottom: `calc(100% + ${10 + oy}px)`,
@@ -59,7 +73,6 @@ export function createTips(primaryColor: string, offset?: { x?: number, y?: numb
     whiteSpace: 'nowrap',
   });
 
-  // 向下三角箭头
   const arrow = document.createElement('div');
   Object.assign(arrow.style, {
     position: 'absolute',
@@ -76,43 +89,87 @@ export function createTips(primaryColor: string, offset?: { x?: number, y?: numb
   inner.appendChild(arrow);
   outer.appendChild(inner);
 
-  const text = document.createElement('span');
-  inner.prepend(text);
+  const textEl = document.createElement('span');
+  inner.prepend(textEl);
+
+  function closeMouth() {
+    if (activeL2d && mouthParam) {
+      activeL2d.setParams({ [mouthParam]: 0 });
+    }
+  }
+
+  function startFloat() {
+    inner.style.opacity = '1';
+    inner.style.animation = 'l2dw-tips-float 2.5s ease-in-out infinite';
+  }
+
+  function startTyping(chars: string[]) {
+    let i = 0;
+
+    function tick() {
+      if (i >= chars.length) {
+        closeMouth();
+        startFloat();
+        return;
+      }
+
+      textEl.textContent = chars.slice(0, i + 1).join('');
+      i++;
+
+      if (activeL2d && mouthParam) {
+        activeL2d.setParams({ [mouthParam]: 0.5 + Math.random() * 0.5 });
+        setTimeout(closeMouth, typingSpeed / 2);
+      }
+
+      typeTimer = setTimeout(tick, typingSpeed);
+    }
+
+    tick();
+  }
 
   function resetInner() {
     clearTimeout(inTimer);
     clearTimeout(hideTimer);
+    clearTimeout(typeTimer);
+    closeMouth();
     inner.style.transition = 'none';
     inner.style.animation = 'none';
     inner.style.opacity = '0';
     inner.style.transform = '';
+    textEl.textContent = '';
   }
 
   return {
     el: outer,
 
-    show(msg: string) {
+    show(msg: string, l2d?: L2D) {
       resetInner();
-      text.textContent = msg;
-
-      // 强制 reflow，让 animation: none 生效后再重新播放
+      activeL2d = l2d;
       void inner.offsetHeight;
-
       inner.style.animation = 'l2dw-tips-in 0.35s ease-out forwards';
 
-      // 入场动画结束后切换为柔和浮动
-      // 切换前显式固化 opacity: 1，避免清除 forwards fill 导致瞬间消失
-      inTimer = setTimeout(() => {
-        inner.style.opacity = '1';
-        inner.style.animation = 'l2dw-tips-float 2.5s ease-in-out infinite';
-      }, 350);
+      if (mouthParam && l2d) {
+        // 打字模式：气泡入场后逐字打出，同步嘴型
+        const chars = [...msg];
+        inTimer = setTimeout(() => {
+          startTyping(chars);
+        }, 350);
+      }
+      else {
+        // 普通模式：直接显示文字，入场后浮动
+        textEl.textContent = msg;
+        inTimer = setTimeout(() => {
+          startFloat();
+        }, 350);
+      }
     },
 
     hide() {
       clearTimeout(inTimer);
       clearTimeout(hideTimer);
+      clearTimeout(typeTimer);
+      closeMouth();
       inner.style.animation = 'none';
-      // 清除动画 fill 后显式固化可见状态，再 reflow，才能触发淡出 transition
       inner.style.opacity = '1';
       void inner.offsetHeight;
       inner.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
@@ -128,6 +185,8 @@ export function createTips(primaryColor: string, offset?: { x?: number, y?: numb
     destroy() {
       clearTimeout(inTimer);
       clearTimeout(hideTimer);
+      clearTimeout(typeTimer);
+      closeMouth();
       outer.remove();
     },
   };

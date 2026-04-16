@@ -11,6 +11,8 @@ export interface ModelOptions {
   volume?: number
   /** 日志级别，默认 'warn' */
   logLevel?: 'error' | 'warn' | 'info' | 'trace'
+  /** 模型专属 tips 配置 */
+  tips?: TipsOptions
 }
 
 export interface MenuItem {
@@ -43,6 +45,13 @@ export interface TipsOptions {
   /** tips 循环间隔（ms），默认 5000 */
   interval?: number
   /**
+   * 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y'
+   * 配置后 tips 以打字动画展示，并同步驱动模型嘴型
+   */
+  mouthParam?: string
+  /** 打字速度（ms/字），默认 100 */
+  typingSpeed?: number
+  /**
    * 位置偏移量（px），基于默认位置（模型正上方居中）进行微调
    * @example { x: 20, y: -10 }  // 向右 20px，向上 10px
    */
@@ -64,8 +73,6 @@ export interface WidgetOptions {
   transitionType?: 'slide' | 'fade'
   /** 菜单配置 */
   menus?: MenusOptions
-  /** tips 配置 */
-  tips?: TipsOptions
 }
 
 export interface Widget {
