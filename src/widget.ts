@@ -34,7 +34,7 @@ function resolveMenuItems(models: ModelOptions[], opts: MenusOptions | undefined
 
 function resolveTipsOptions(opts: TipsOptions | undefined) {
   return {
-    welcomeMessage: opts?.welcomeMessage ?? '欢迎来访！',
+    welcomeMessages: opts?.welcomeMessage ?? ['欢迎来访！', '好久不见，欢迎回来！', '你来啦～'],
     messages: opts?.messages ?? ['记得多休息哦～', '有什么可以帮你的吗？', '今天也要开心哦！'],
     duration: opts?.duration ?? 3000,
     interval: opts?.interval ?? 5000,
@@ -78,7 +78,7 @@ export function createWidget(options: WidgetOptions): Widget {
   const models = Array.isArray(options.model) ? options.model : [options.model];
   const { width, height } = resolveSize(size);
   const useSlide = transitionType !== 'fade';
-  const { welcomeMessage, messages: tipsMessages, duration: tipsDuration, interval: tipsInterval } = resolveTipsOptions(options.tips);
+  const { welcomeMessages, messages: tipsMessages, duration: tipsDuration, interval: tipsInterval } = resolveTipsOptions(options.tips);
 
   // 容器：始终 fixed，挂载到 document.body
   const container = document.createElement('div');
@@ -135,7 +135,7 @@ export function createWidget(options: WidgetOptions): Widget {
 
   function launchTips() {
     welcomeTimer = setTimeout(() => {
-      showTip(welcomeMessage);
+      showTip(welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)]!);
       startTipsLoop();
     }, transitionDuration);
   }
@@ -221,7 +221,7 @@ export function createWidget(options: WidgetOptions): Widget {
   container.appendChild(menu.el);
   cancelHover = setupMenuHover(canvas, menu);
 
-  tips = createTips(primaryColor);
+  tips = createTips(primaryColor, options.tips?.offset);
   container.appendChild(tips.el);
 
   return widget;

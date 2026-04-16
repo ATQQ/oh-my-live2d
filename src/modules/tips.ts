@@ -23,7 +23,7 @@ export interface TipsHandle {
   destroy: () => void
 }
 
-export function createTips(primaryColor: string): TipsHandle {
+export function createTips(primaryColor: string, offset?: { x?: number, y?: number }): TipsHandle {
   ensureTipsStyle();
 
   let inTimer: ReturnType<typeof setTimeout> | undefined;
@@ -31,10 +31,12 @@ export function createTips(primaryColor: string): TipsHandle {
 
   // 外层：只负责定位，不参与动画
   const outer = document.createElement('div');
+  const ox = offset?.x ?? 0;
+  const oy = offset?.y ?? 0;
   Object.assign(outer.style, {
     position: 'absolute',
-    bottom: 'calc(100% + 10px)',
-    left: '50%',
+    bottom: `calc(100% + ${10 + oy}px)`,
+    left: `calc(50% + ${ox}px)`,
     transform: 'translateX(-50%)',
     pointerEvents: 'none',
     zIndex: '2',

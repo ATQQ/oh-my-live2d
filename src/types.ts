@@ -34,14 +34,19 @@ export interface MenusOptions {
 }
 
 export interface TipsOptions {
-  /** 欢迎语，模型首次入场后显示，默认 '欢迎来访！' */
-  welcomeMessage?: string
+  /** 欢迎语，模型首次入场后随机取一条显示，默认内置几条 */
+  welcomeMessage?: string[]
   /** 循环提示内容 */
   messages?: string[]
   /** 每条 tips 展示时长（ms），默认 3000 */
   duration?: number
   /** tips 循环间隔（ms），默认 5000 */
   interval?: number
+  /**
+   * 位置偏移量（px），基于默认位置（模型正上方居中）进行微调
+   * @example { x: 20, y: -10 }  // 向右 20px，向上 10px
+   */
+  offset?: { x?: number, y?: number }
 }
 
 export interface WidgetOptions {
