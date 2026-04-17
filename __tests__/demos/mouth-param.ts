@@ -10,8 +10,12 @@ export default {
         path: 'https://model.hacxy.cn/cat-black/model.json',
         tips: {
           offset: { y: -28, x: 10 },
-          mouthParam: 'PARAM_MOUTH_OPEN_Y',
-          typingSpeed: 200,
+          typing: {
+            param: 'PARAM_MOUTH_OPEN_Y',
+            speed: 200,
+            minValue: 0,
+            maxValue: 1,
+          },
           welcomeMessage: [
             '你好，我是猫猫！',
             '今天天气真不错呢～',

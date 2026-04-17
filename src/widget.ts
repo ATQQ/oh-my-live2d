@@ -155,8 +155,7 @@ export function createWidget(options: WidgetOptions): Widget {
     tips?.destroy();
     tips = createTips(primaryColor, {
       offset: model.tips?.offset,
-      mouthParam: model.tips?.mouthParam,
-      typingSpeed: model.tips?.typingSpeed,
+      typing: model.tips?.typing,
     });
     container.appendChild(tips.el);
 

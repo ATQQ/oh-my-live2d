@@ -20,10 +20,12 @@ function ensureTipsStyle() {
 
 export interface TipsConfig {
   offset?: { x?: number, y?: number }
-  /** 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y' */
-  mouthParam?: string
-  /** 打字速度（ms/字），默认 100 */
-  typingSpeed?: number
+  typing?: {
+    param?: string
+    speed?: number
+    minValue?: number
+    maxValue?: number
+  }
 }
 
 export interface TipsHandle {
@@ -36,9 +38,13 @@ export interface TipsHandle {
 export function createTips(primaryColor: string, config?: TipsConfig): TipsHandle {
   ensureTipsStyle();
 
-  const { offset, mouthParam, typingSpeed = 100 } = config ?? {};
+  const { offset, typing } = config ?? {};
   const ox = offset?.x ?? 0;
   const oy = offset?.y ?? 0;
+  const mouthParam = typing?.param;
+  const typingSpeed = typing?.speed ?? 100;
+  const typingMin = typing?.minValue ?? 0.5;
+  const typingMax = typing?.maxValue ?? 1;
 
   let inTimer: ReturnType<typeof setTimeout> | undefined;
   let hideTimer: ReturnType<typeof setTimeout> | undefined;
@@ -117,7 +123,7 @@ export function createTips(primaryColor: string, config?: TipsConfig): TipsHandl
       i++;
 
       if (activeL2d && mouthParam) {
-        activeL2d.setParams({ [mouthParam]: 0.5 + Math.random() * 0.5 });
+        activeL2d.setParams({ [mouthParam]: typingMin + Math.random() * (typingMax - typingMin) });
         setTimeout(closeMouth, typingSpeed / 2);
       }
 
@@ -148,8 +154,8 @@ export function createTips(primaryColor: string, config?: TipsConfig): TipsHandl
       void inner.offsetHeight;
       inner.style.animation = 'l2dw-tips-in 0.35s ease-out forwards';
 
-      if (mouthParam && l2d) {
-        // 打字模式：气泡入场后逐字打出，同步嘴型
+      if (typing) {
+        // 打字模式：气泡入场后逐字打出；若配置了 param 则同步嘴型
         const chars = [...msg];
         inTimer = setTimeout(() => {
           startTyping(chars);

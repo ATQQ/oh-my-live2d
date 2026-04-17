@@ -44,13 +44,21 @@ export interface TipsOptions {
   duration?: number
   /** tips 循环间隔（ms），默认 5000 */
   interval?: number
-  /**
-   * 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y'
-   * 配置后 tips 以打字动画展示，并同步驱动模型嘴型
-   */
-  mouthParam?: string
-  /** 打字速度（ms/字），默认 100 */
-  typingSpeed?: number
+  /** 打字动画与嘴型同步配置，配置后 tips 文字以逐字打字效果展示 */
+  typing?: {
+    /**
+     * 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y'
+     * @see https://docs.live2d.com/
+     */
+    /** 嘴型参数名，如 'PARAM_MOUTH_OPEN_Y'；不填则只播放打字动画，不驱动嘴型 */
+    param?: string
+    /** 打字速度（ms/字），默认 100 */
+    speed?: number
+    /** 嘴型开合最小随机值（0~1），默认 0.5 */
+    minValue?: number
+    /** 嘴型开合最大随机值（0~1），默认 1 */
+    maxValue?: number
+  }
   /**
    * 位置偏移量（px），基于默认位置（模型正上方居中）进行微调
    * @example { x: 20, y: -10 }  // 向右 20px，向上 10px
