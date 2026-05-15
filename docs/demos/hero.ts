@@ -21,25 +21,13 @@ function buildCodeTokens(path: string): Token[][] {
     [],
     [
       { text: 'createWidget', cls: 'fn' },
-      { text: '({' },
-    ],
-    [
-      { text: '  ' },
+      { text: '({ ' },
       { text: 'model', cls: 'prop' },
-      { text: ': {' },
-    ],
-    [
-      { text: '    ' },
+      { text: ': { ' },
       { text: 'path', cls: 'prop' },
       { text: ': ' },
       { text: `'${path}'`, cls: 'str' },
-      { text: ',' },
-    ],
-    [
-      { text: '  },' },
-    ],
-    [
-      { text: '})' },
+      { text: ' } })' },
     ],
   ];
 }
