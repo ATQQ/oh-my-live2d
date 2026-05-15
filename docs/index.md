@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "l2d-widget"
-  text: "轻量级 Live2D 网页挂件"
-  tagline: 一行代码 · 零依赖 · 开箱即用
+  text: "轻量级 Live2D 组件"
+  tagline: 零依赖 · 开箱即用· 所有模型
   actions:
     - theme: brand
       text: 快速开始

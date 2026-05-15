@@ -1,18 +1,13 @@
 <script lang="ts" setup>
 import { useData } from 'vitepress';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const BASE = 'https://model.hacxy.cn';
-const DISPLAY_DURATION = 5000;
 
 const { isDark } = useData();
 const visible = ref(false);
 const iframeSrc = ref('');
 const iframeEl = ref<HTMLIFrameElement | null>(null);
-let stopped = false;
-let models: string[] = [];
-let current = '';
-let onLoaded: (() => void) | null = null;
 
 watch(isDark, dark => {
   iframeEl.value?.contentWindow?.postMessage({ type: 'theme-change', dark }, '*');
@@ -24,11 +19,15 @@ function parseLinks(html: string): string[] {
     .filter(h => !h.startsWith('?') && h !== '../');
 }
 
-async function fetchModels(): Promise<string[]> {
-  const rootHtml = await fetch(`${BASE}/`).then(r => r.text());
-  const dirs = parseLinks(rootHtml).filter(l => l.endsWith('/'));
-  const results = await Promise.allSettled(
-    dirs.map(async dir => {
+async function fetchRandomModel(): Promise<string> {
+  const fallback = `${BASE}/cat-black/model.json`;
+  try {
+    const rootHtml = await fetch(`${BASE}/`).then(r => r.text());
+    const dirs = parseLinks(rootHtml).filter(l => l.endsWith('/'));
+    if (dirs.length === 0)
+      return fallback;
+    const shuffled = dirs.sort(() => Math.random() - 0.5);
+    for (const dir of shuffled) {
       const name = dir.replace(/\/$/, '');
       const dirHtml = await fetch(`${BASE}/${name}/`).then(r => r.text());
       const files = parseLinks(dirHtml);
@@ -38,90 +37,21 @@ async function fetchModels(): Promise<string[]> {
         || f === 'index.json'
         || f === 'model.json',
       );
-      return jsonFile ? `${BASE}/${name}/${jsonFile}` : null;
-    }),
-  );
-  return results
-    .filter((r): r is PromiseFulfilledResult<string | null> => r.status === 'fulfilled')
-    .map(r => r.value)
-    .filter((v): v is string => v !== null);
-}
-
-function pickRandom(): string {
-  if (models.length <= 1)
-    return models[0] ?? `${BASE}/cat-black/model.json`;
-  let pick: string;
-  do {
-    pick = models[Math.floor(Math.random() * models.length)]!;
-  } while (pick === current && models.length > 1);
-  return pick;
-}
-
-function handleMessage(e: MessageEvent) {
-  if (e.data?.type === 'l2d-widget-loaded') {
-    onLoaded?.();
-    onLoaded = null;
+      if (jsonFile)
+        return `${BASE}/${name}/${jsonFile}`;
+    }
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-function waitLoaded(): Promise<void> {
-  return new Promise(resolve => {
-    onLoaded = resolve;
-    setTimeout(() => {
-      if (onLoaded === resolve) {
-        onLoaded = null;
-        resolve();
-      }
-    }, 15000);
-  });
-}
-
-async function switchModel(path: string) {
-  current = path;
-  const loaded = waitLoaded();
-  iframeEl.value?.contentWindow?.postMessage({ type: 'switch-model', path }, '*');
-  await loaded;
-}
-
-async function loop() {
-  // eslint-disable-next-line no-unmodified-loop-condition
-  while (!stopped && models.length > 1) {
-    await sleep(DISPLAY_DURATION);
-    if (stopped)
-      break;
-    await switchModel(pickRandom());
-  }
+  catch {}
+  return fallback;
 }
 
 onMounted(async () => {
-  window.addEventListener('message', handleMessage);
   requestAnimationFrame(() => {
     visible.value = true;
   });
 
-  current = `${BASE}/cat-black/model.json`;
-  const loaded = waitLoaded();
-  iframeSrc.value = `/demos/hero.html?model=${encodeURIComponent(current)}&dark=${isDark.value ? '1' : '0'}`;
-  await loaded;
-
-  try {
-    models = await fetchModels();
-  }
-  catch {
-    models = [current];
-  }
-
-  loop();
-});
-
-onBeforeUnmount(() => {
-  stopped = true;
-  onLoaded = null;
-  window.removeEventListener('message', handleMessage);
+  const model = await fetchRandomModel();
+  iframeSrc.value = `/demos/hero.html?model=${encodeURIComponent(model)}&dark=${isDark.value ? '1' : '0'}`;
 });
 </script>
 
