@@ -32,7 +32,9 @@ function resolveMenuItems(models: ModelOptions[], opts: MenusOptions | undefined
   return [...getDefaultItems(models), ...(opts?.extraItems ?? [])];
 }
 
-function resolveTipsOptions(opts: TipsOptions | undefined) {
+function resolveTipsOptions(opts: TipsOptions | false | undefined) {
+  if (opts === false)
+    return null;
   return {
     welcomeMessages: opts?.welcomeMessage ?? ['欢迎来访！', '好久不见，欢迎回来！', '你来啦～'],
     messages: opts?.messages ?? ['记得多休息哦～', '有什么可以帮你的吗？', '今天也要开心哦！'],
@@ -113,6 +115,8 @@ export function createWidget(options: WidgetOptions): Widget {
   let currentModelTipsData = resolveTipsOptions(models[0]?.tips);
 
   function showTip(msg: string) {
+    if (!currentModelTipsData)
+      return;
     tips?.show(msg, l2dInstance);
     showTipHideTimer = setTimeout(() => {
       tips?.hide();
@@ -126,14 +130,18 @@ export function createWidget(options: WidgetOptions): Widget {
   }
 
   function startTipsLoop() {
+    if (!currentModelTipsData)
+      return;
     stopTipsLoop();
     tipsTimer = setInterval(() => {
-      showTip(currentModelTipsData.messages[msgIndex % currentModelTipsData.messages.length]!);
+      showTip(currentModelTipsData!.messages[msgIndex % currentModelTipsData!.messages.length]!);
       msgIndex++;
     }, currentModelTipsData.interval);
   }
 
   function launchTips() {
+    if (!currentModelTipsData)
+      return;
     const msgs = currentModelTipsData.welcomeMessages;
     welcomeTimer = setTimeout(() => {
       showTip(msgs[Math.floor(Math.random() * msgs.length)]!);
@@ -151,13 +159,18 @@ export function createWidget(options: WidgetOptions): Widget {
     currentModelTipsData = resolveTipsOptions(model.tips);
     msgIndex = 0;
 
-    // 重建 tips 元素以应用当前模型的配置（位置偏移、嘴型参数等）
-    tips?.destroy();
-    tips = createTips(primaryColor, {
-      offset: model.tips?.offset,
-      typing: model.tips?.typing,
-    });
-    container.appendChild(tips.el);
+    if (tips) {
+      tips.destroy();
+      tips = null as unknown as TipsHandle | undefined;
+    }
+    if (currentModelTipsData) {
+      const tipsOpts = model.tips as TipsOptions | undefined;
+      tips = createTips(primaryColor, {
+        offset: tipsOpts?.offset,
+        typing: tipsOpts?.typing,
+      });
+      container.appendChild(tips.el);
+    }
 
     statusBar.showLoading();
     l2dInstance.on('loaded', () => {
@@ -202,6 +215,7 @@ export function createWidget(options: WidgetOptions): Widget {
     async switchModel(index: number) {
       stopTipsLoop();
       tips?.hide();
+      statusBar.showLoading('切换中');
       applyStyle(container, useSlide, false);
       await waitExit();
       const waitDestroy = new Promise<void>(r => {

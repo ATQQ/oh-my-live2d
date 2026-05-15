@@ -9,7 +9,7 @@ function ensureSpinnerStyle() {
 
 export interface StatusBarHandle {
   el: HTMLElement
-  showLoading: () => void
+  showLoading: (label?: string) => void
   showRest: (onWake: () => void) => void
   hide: () => void
   destroy: () => void
@@ -75,12 +75,13 @@ export function createStatusBar(
   return {
     el: bar,
 
-    showLoading() {
-      text.textContent = '正在加载';
+    showLoading(label = '正在加载') {
+      text.textContent = label;
       spinner.style.display = 'block';
       bar.style.pointerEvents = 'none';
       bar.style.cursor = 'default';
       wakeHandler = null;
+      void bar.offsetHeight;
       bar.style.transform = visibleTransform;
     },
 
@@ -90,6 +91,7 @@ export function createStatusBar(
       bar.style.pointerEvents = 'auto';
       bar.style.cursor = 'pointer';
       wakeHandler = onWake;
+      void bar.offsetHeight;
       bar.style.transform = visibleTransform;
     },
 

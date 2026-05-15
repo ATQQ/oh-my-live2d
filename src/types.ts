@@ -11,8 +11,8 @@ export interface ModelOptions {
   volume?: number
   /** 日志级别，默认 'warn' */
   logLevel?: 'error' | 'warn' | 'info' | 'trace'
-  /** 模型专属 tips 配置 */
-  tips?: TipsOptions
+  /** 模型专属 tips 配置，传 false 关闭 */
+  tips?: TipsOptions | false
 }
 
 export interface MenuItem {
