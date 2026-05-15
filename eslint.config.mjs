@@ -5,5 +5,5 @@ export default hacxy({
     'max-params': 0,
     'antfu/no-import-dist': 0
   },
-  ignores: ['dist/**'],
+  ignores: ['dist/**', '.github/**'],
 });
