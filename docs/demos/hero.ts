@@ -66,7 +66,7 @@ async function typeCode(lines: Token[][]) {
     const tokens = lines[i]!;
     if (tokens.length === 0) {
       lineEl.appendChild(cursor);
-      await sleep(120);
+      await sleep(60);
       continue;
     }
 
@@ -80,7 +80,7 @@ async function typeCode(lines: Token[][]) {
         cursor.remove();
         span.textContent += ch;
         lineEl.appendChild(cursor);
-        await sleep(25 + Math.random() * 20);
+        await sleep(12 + Math.random() * 10);
       }
     }
   }
