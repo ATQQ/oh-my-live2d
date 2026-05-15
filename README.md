@@ -1,10 +1,14 @@
-# l2d-widget
+<p align="center">
+  <img width="240" src="https://hacxy-1259720482.cos.ap-hongkong.myqcloud.com/images/logo.svg"/>
+</p>
+<h1 align="center">l2d-widget</h1>
+<h4 align="center">Drop a Live2D character onto any web page. One function call, zero framework dependencies.</h4>
 
-[![npm version](https://img.shields.io/npm/v/l2d-widget)](https://www.npmjs.com/package/l2d-widget)
-[![license](https://img.shields.io/npm/l/l2d-widget)](LICENSE)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/l2d-widget)](https://bundlephobia.com/package/l2d-widget)
-
-Drop a Live2D character onto any web page. One function call, zero framework dependencies.
+<p align="center">
+  <a href="https://www.npmjs.com/package/l2d-widget"><img src="https://img.shields.io/npm/v/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=npm" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/l2d-widget"><img src="https://img.shields.io/npm/dm/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=downloads" alt="downloads"></a>
+  <a href="https://bundlephobia.com/package/l2d-widget"><img src="https://img.shields.io/bundlephobia/minzip/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=minzip" alt="bundle size"></a>
+</p>
 
 [Documentation](https://l2d-widget.hacxy.cn) | [中文](./README.zh.md)
 
