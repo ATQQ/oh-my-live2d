@@ -1,3 +1,9 @@
+## [0.0.2](https://github.com/oh-my-live2d/oh-my-live2d/compare/v0.0.1...v0.0.2) (2026-05-15)
+
+### Bug Fixes
+
+- 移除导航栏重复的语言切换项 ([bb9105a](https://github.com/oh-my-live2d/oh-my-live2d/commit/bb9105a2aea9d2569db7616da3cde04e87d95a54))
+
 ## 0.0.1 (2026-05-15)
 
 ### Bug Fixes
