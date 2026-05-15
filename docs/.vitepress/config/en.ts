@@ -28,7 +28,6 @@ export const en: LocaleSpecificConfig<DefaultTheme.Config> = {
       { text: 'Guide', link: '/en/guide/', activeMatch: '/en/guide/' },
       { text: 'API', link: '/api/functions/createWidget', activeMatch: '/api/' },
       { text: 'Examples', link: '/en/examples/', activeMatch: '/en/examples/' },
-      { text: 'English', items: [{ text: '简体中文', link: '/' }] },
     ],
     sidebar: {
       '/en/guide/': [

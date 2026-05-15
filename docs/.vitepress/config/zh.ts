@@ -28,7 +28,6 @@ export const zh: LocaleSpecificConfig<DefaultTheme.Config> = {
       { text: '指南', link: '/guide/', activeMatch: '/guide/' },
       { text: 'API', link: '/api/functions/createWidget', activeMatch: '/api/' },
       { text: '示例', link: '/examples/', activeMatch: '/examples/' },
-      { text: '简体中文', items: [{ text: 'English', link: '/en/' }] },
     ],
     sidebar: {
       '/guide/': [
