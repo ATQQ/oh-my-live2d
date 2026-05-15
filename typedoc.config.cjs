@@ -1,21 +1,20 @@
 /** @type {import('typedoc').TypeDocOptions & import('typedoc-plugin-markdown').PluginOptions} */
 module.exports = {
-  entryPoints: ['./packages/oh-my-live2d/src/index.ts'],
-  tsconfig: './packages/oh-my-live2d/tsconfig.json',
-  out: './docs/src/api',
-  plugin: ['typedoc-plugin-markdown', './docs/src/.vitepress/theme/typedoc-theme.mjs'],
+  entryPoints: ['./src/index.ts'],
+  tsconfig: './tsconfig.json',
+  out: './docs/api',
+  plugin: ['typedoc-plugin-markdown', './docs/.vitepress/theme/typedoc-theme.mjs'],
   theme: 'themeExpand',
   hideBreadcrumbs: true,
   hidePageHeader: true,
   hidePageTitle: false,
   disableSources: true,
-  name: 'oh-my-live2d',
+  name: 'l2d-widget',
   typeDeclarationFormat: 'list',
   parametersFormat: 'table',
-  // expandObjects: true,
   expandParameters: true,
   outputFileStrategy: 'members',
-  // flattenOutputFiles: true,
+  sort: ['source-order'],
   textContentMappings: {
     'label.name': '',
     'label.returns': '返回值类型:',
@@ -38,6 +37,6 @@ module.exports = {
     'kind.function.singular': '函数',
     'kind.parameter.singular': '参数名',
     'kind.parameter.plural': '参数:',
-    'label.defaultValue': '默认值'
-  }
+    'label.defaultValue': '默认值',
+  },
 };

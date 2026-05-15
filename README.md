@@ -1,159 +1,112 @@
-<!-- markdownlint-disable -->
 <p align="center">
-  <img width="240" style="text-align:center;" src="https://raw.githubusercontent.com/hacxy/hacxy/main/images/121472002.png"/>
+  <img width="240" src="https://hacxy-1259720482.cos.ap-hongkong.myqcloud.com/images/logo.svg"/>
 </p>
-<h1 align="center">OhMyLive2D</h1>
-<h4 align="center">高可自定义的Live2D For Web组件</h4>
+<h1 align="center">l2d-widget</h1>
+<h4 align="center">Drop a Live2D character onto any web page. One function call, zero framework dependencies.</h4>
 
-![npm](https://img.shields.io/npm/v/oh-my-live2d?label=npm) ![](https://img.shields.io/npm/dt/oh-my-live2d.svg) ![](https://img.shields.io/badge/cubism-2%2F5-orange) ![GitHub package.json version](https://img.shields.io/npm/v/vuepress-plugin-oh-my-live2d?label=vuepress-plugin)
+<p align="center">
+  <a href="https://www.npmjs.com/package/l2d-widget"><img src="https://img.shields.io/npm/v/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=npm" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/l2d-widget"><img src="https://img.shields.io/npm/dm/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=downloads" alt="downloads"></a>
+  <a href="https://bundlephobia.com/package/l2d-widget"><img src="https://img.shields.io/bundlephobia/minzip/l2d-widget?color=FFB6C1&labelColor=1b1b1f&label=minzip" alt="bundle size"></a>
+</p>
 
-**OhMyLive2D** 是一个应用于浏览器环境且开箱即用的**Live2D**组件, 它支持所有版本的Live2D模型, 使用方式足够简单并且高可自定义, 可以快速为您的个人网站添加Live2D看板娘, 使您的个人网站变得更具有特色.
+[Documentation](https://l2d-widget.hacxy.cn) | [中文](./README.zh.md)
 
-**通过 [查阅文档](https://oml2d.hacxy.cn) 以了解更多详细使用教程。**
+## Features
 
-## 先决条件
+- **Single-call integration** — `createWidget()` handles canvas creation, WebGL context initialization, model loading, and interaction bindng in one call
+- **Cubism 2 & 6 runtime** — built on [l2d](https://github.com/hacxy/l2d), auto-detects model version and loads the correct Cubism runtime
+- **Lip-sync via parameter driving** — character-by-character typing animation drives mouth open/close parameters (`PARAM_MOUTH_OPEN_Y`) in real time with configurable value ranges
+- **Full lifecycle control** — `switchModel()` runs exit transition → WebGL teardown → re-init → entrance transition as one atomic async operation; `destroy()` guarantees resource cleanup
+- **~500 lines, zero runtime deps** — pure DOM + CSS Animation, no framework. Outputs ESM and IIFE, tree-shakeable
 
-- 支持 **WebGL** 和 **ES6** 的浏览器
+## Installation
 
-## 特点
-
-- 支持 `CDN` 或 `ES6 Module` 两种导入方式。
-
-- 默认自动集成 `Cubism 2 SDK` 和 `Cubism 5 SDK`，您无需手动额外引入其他外部依赖。
-
-- 可自定义多个本地或远程 `Live2D Model`, 通过菜单按顺序切换模型。
-
-- 使用 `TypeScript` 开发，通过完整的类型推导享受它为您带来的语法补全。
-
-- 高可自定义, 完全可自定义的模块.
-
-- 多种[支持方案](#更多支持)。
-
-## 快速体验
-
-您可以通过[stackblitz](https://stackblitz.com/edit/vitejs-vite-shccpw?file=main.js)在线体验
-
-或者在您本地的任意项目中使用CDN导入方式来体验:
-
-<image align="right" height="325px" src="https://raw.githubusercontent.com/hacxy/hacxy/main/images/%E5%BD%95%E5%B1%8F2024-03-21%2023.18.31.gif"/>
-
-```html
-<script src="https://unpkg.com/oh-my-live2d@latest"></script>
-<script>
-  OML2D.loadOml2d({
-    models: [
-      {
-        path: 'https://model.hacxy.cn/HK416-1-normal/model.json',
-        position: [0, 60],
-        scale: 0.08,
-        stageStyle: {
-          height: 450
-        }
-      }
-    ]
-  });
-</script>
+```bash
+npm install l2d-widget
 ```
 
-之后您可以查阅文档了解更多相关内容:[查阅文档](https://oml2d.com/guide/index.html)
+Or use a CDN:
 
-## 更多支持
+```html
+<script src="https://unpkg.com/l2d-widget/dist/index.min.js"></script>
+```
 
-- [在 VitePress 中使用](https://oml2d.hacxy.cn/guide/vitepress.html)
-- [在 VuePress2 中使用](https://oml2d.hacxy.cn/guide/vuepress.html)
-- [通过 VitePlugin 方式使用](https://oml2d.hacxy.cn/guide/vite.html)
-- [在 Hexo 中使用](https://oml2d.hacxy.cn/guide/hexo.html)
+## Quick Start
 
-## 案例
+```ts
+import { createWidget } from 'l2d-widget';
 
-以下是一些非常优质的使用案例:
+const widget = createWidget({
+  model: {
+    path: 'https://model.hacxy.cn/cat-black/model.json',
+  },
+});
+```
 
-- <https://hacxy.cn>
-- <https://sugarat.top>
-- <https://theme.sugarat.top>
-- <https://asev.gitee.io>
-- <https://docs.kisssssssss.space/setting/live2d>
-- <https://being.leafyee.xyz> & <https://github.com/LeafYeeXYZ/DigitalLife>
+A Live2D model appears in the bottom-left corner of the page with a hover menu and tip bubbles. The returned `widget` object gives you programmatic control (switch models, sleep, destroy).
 
-**征集更多案例, 欢迎您的PR😋**
+## Examples
 
-## 如何贡献代码
+### Multi-Model Switching
 
-本项目管理方式采用 `monorepo` 结构, 开始参与维护前需要您全局安装 `pnpm`, 并提前了解 Angular Git提交规范.
+```ts
+createWidget({
+  model: [
+    { path: '/models/cat-black/model.json' },
+    { path: '/models/cat-white/model.json' },
+  ],
+});
+```
 
-- 首先 fork 本仓库并将项目 clone 至本地
+A shuffle button appears automatically in the menu when multiple models are provided.
 
-- cd 到项目目录之后安装依赖:
+### Typing Animation with Lip-Sync
 
-  ```sh
-  pnpm install
-  ```
+```ts
+createWidget({
+  model: {
+    path: '/models/cat-black/model.json',
+    tips: {
+      typing: {
+        param: 'PARAM_MOUTH_OPEN_Y',
+        speed: 200,
+      },
+      welcomeMessage: ['Hello!', 'Nice to meet you!'],
+      messages: ['Take a break~', 'Stay hydrated!'],
+      duration: 4000,
+      interval: 6000,
+    },
+  },
+});
+```
 
-- 运行开发环境
+## Widget Instance
 
-  ```sh
-  pnpm dev
-  ```
+`createWidget()` returns a `Widget` object:
 
-- 运行测试
-  ```sh
-  pnpm test
-  ```
-- 运行文档
-  ```sh
-  pnpm docs:dev
-  ```
+| Method / Property    | Description                              |
+| -------------------- | ---------------------------------------- |
+| `l2d`                | Underlying `l2d` instance                |
+| `switchModel(index)` | Switch to a model by index               |
+| `sleep()`            | Hide model; click the status bar to wake |
+| `destroy()`          | Tear down widget and release resources   |
 
-核心代码存放于: `packages/oh-my-live2d` 中, 所有模块以命名区分分别存放于 `src/modules` 文件夹下
+For the full options reference (`WidgetOptions`, `ModelOptions`, `MenusOptions`, `TipsOptions`), see the [documentation](https://l2d-widget.hacxy.cn).
 
-需要注意的是所有本地文件的导入语句需要以 `.js` 结尾, 否则会产生类型推导异常
+## Development
 
-文档中所有配置选项的描述无需您手动编辑, 它将根据 `packages/oh-my-live2d/src/types` 中导出的类型模块自动生成, 注释即文档
-
-修改完代码后您只需按照 Angular 提交规范, 提交代码至您fork之后的仓库即可, 然后向本仓库提交PR
-
-## 贡献者们
-
-感谢以下所有为 `oh-my-live2d` 贡献过代码的 [开发者们](https://github.com/oh-my-live2d/oh-my-live2d/graphs/contributors)。
-
-<a href="https://github.com/oh-my-live2d/oh-my-live2d/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=oh-my-live2d/oh-my-live2d" />
-</a>
-
-## 赞赏
-
-<img height="200" src="https://raw.githubusercontent.com/hacxy/hacxy/main/images/IMG_0249.JPG"/>
-
-> 打赏时如果备注了 Github 用户名称以及项目名称, 之后将会出现在鸣谢列表中, 备注格式: 打赏的项目名称: 你的用户名称.  
-> 备注示例: oml2d: hacxy
-
-## 鸣谢
-
-非常感谢以下为本项目赞助过的所有人:
-
-<a href="https://github.com/Chen-Yulin">
-<img  height="40" src="https://avatars.githubusercontent.com/u/81513548?v=4"/>
-<a/>
-
-## 讨论
-
-- 微信群:
-
-  <image style="display: inline-block;width:200px;padding-right:6px" src='https://loclink-1259720482.cos.ap-beijing.myqcloud.com/image/wxq.png'/>
-
-- QQ群: 474032914
-
-> [!TIP]
-> 感谢您使用 `oh-my-live2d`, 创作不易, 您的 **star** 是我更新的动力.
-
-## Project Status
-
-![Alt](https://repobeats.axiom.co/api/embed/b603e73fc87261ea004a095fe8937e5b738d979a.svg 'Repobeats analytics image')
+| Command      | Purpose                       |
+| ------------ | ----------------------------- |
+| `pnpm dev`   | Watch build with sourcemaps   |
+| `pnpm demo`  | Demo server at localhost:3000 |
+| `pnpm build` | Production build              |
+| `pnpm lint`  | Lint                          |
 
 ## License
 
-[MIT](./LICENSE) License &copy; 2023-PRESENT [Hacxy](https://github.com/hacxy)
+[MIT](LICENSE)
 
-## 免责声明
+---
 
-本仓库所有模型文件均来源于网络, 仅供参考和学习, 严禁用于任何商业盈利项目, 所有以盈利为目的而使用本仓库的模型资源的行为均与仓库创建者无关, 仓库中每个模型的所有权均属于这个模型的作者或创作团队, 若侵权请联系: hacxy.js@outlook.com 及时删除
+> 中文文档请见 [README.zh.md](./README.zh.md)
