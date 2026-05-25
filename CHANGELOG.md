@@ -1,3 +1,13 @@
+# [0.1.0](https://github.com/hacxy/l2d-widget/compare/v0.0.2...v0.1.0) (2026-05-25)
+
+### Bug Fixes
+
+- 修复文档示例在生产环境无法运行的问题 ([fb7a10c](https://github.com/hacxy/l2d-widget/commit/fb7a10c8c792bf436c95b2f41263b6b6d297fbd0))
+
+### Features
+
+- 为菜单、状态条、气泡组件添加 style 自定义选项 ([e0130d7](https://github.com/hacxy/l2d-widget/commit/e0130d7d493153859d49a81fb77a4bfe9ae4c9b8))
+
 ## [0.0.2](https://github.com/oh-my-live2d/oh-my-live2d/compare/v0.0.1...v0.0.2) (2026-05-15)
 
 ### Bug Fixes
