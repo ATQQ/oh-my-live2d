@@ -15,13 +15,17 @@
         overflow: hidden;
         background: #f9fafb;
       }
-      @media (prefers-color-scheme: dark) {
-        html,
-        body {
-          background: #1a1a1a;
-        }
+      html.dark body {
+        background: #1a1a1a;
       }
     </style>
+    <script>
+      const stored = localStorage.getItem('vitepress-theme-appearance')
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      if (stored === 'dark' || (stored !== 'light' && prefersDark)) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
   </head>
   <body>
     <script type="module" src="./runner.ts"></script>
