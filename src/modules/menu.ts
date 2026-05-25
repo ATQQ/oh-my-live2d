@@ -85,7 +85,7 @@ export interface MenuHandle {
 export function createMenu(
   items: MenuItem[],
   widget: Widget,
-  { align = 'right', primaryColor }: { align?: 'left' | 'right', primaryColor: string },
+  { align = 'right', primaryColor, style }: { align?: 'left' | 'right', primaryColor: string, style?: Partial<CSSStyleDeclaration> },
 ): MenuHandle {
   const bar = document.createElement('div');
 
@@ -103,6 +103,9 @@ export function createMenu(
     pointerEvents: 'none',
     transition: 'opacity 0.2s ease-in-out',
   });
+
+  if (style)
+    Object.assign(bar.style, style);
 
   for (const item of items) {
     bar.appendChild(createMenuButton(item, widget, primaryColor));

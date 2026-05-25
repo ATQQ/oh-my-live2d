@@ -20,6 +20,7 @@ export function createStatusBar(
   transitionDuration: number,
   height: number,
   primaryColor: string,
+  style?: Partial<CSSStyleDeclaration>,
 ): StatusBarHandle {
   ensureSpinnerStyle();
 
@@ -40,7 +41,7 @@ export function createStatusBar(
     flexDirection: 'column',
     alignItems: 'center',
     gap: '8px',
-    padding: '16px 8px',
+    padding: '16px 3px',
     background: primaryColor,
     backdropFilter: 'blur(8px)',
     borderRadius: isRight ? '8px 0 0 8px' : '0 8px 8px 0',
@@ -51,14 +52,17 @@ export function createStatusBar(
     willChange: 'transform',
   });
 
+  if (style)
+    Object.assign(bar.style, style);
+
   bar.addEventListener('click', () => {
     wakeHandler?.();
   });
 
   const spinner = document.createElement('div');
   Object.assign(spinner.style, {
-    width: '16px',
-    height: '16px',
+    width: '12px',
+    height: '12px',
     border: '2px solid rgba(255,255,255,0.25)',
     borderTopColor: 'rgba(255,255,255,0.85)',
     borderRadius: '50%',

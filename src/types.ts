@@ -33,6 +33,8 @@ export interface MenusOptions {
   extraItems?: MenuItem[]
   /** 菜单对齐方式，默认 'right' */
   align?: 'left' | 'right'
+  /** 自定义菜单容器样式，会合并覆盖默认样式 */
+  style?: Partial<CSSStyleDeclaration>
 }
 
 export interface TipsOptions {
@@ -64,6 +66,8 @@ export interface TipsOptions {
    * @example { x: 20, y: -10 }  // 向右 20px，向上 10px
    */
   offset?: { x?: number, y?: number }
+  /** 自定义气泡样式，会合并覆盖默认样式 */
+  style?: Partial<CSSStyleDeclaration>
 }
 
 export interface WidgetOptions {
@@ -81,6 +85,11 @@ export interface WidgetOptions {
   transitionType?: 'slide' | 'fade'
   /** 菜单配置 */
   menus?: MenusOptions
+  /** 状态条配置 */
+  statusBar?: {
+    /** 自定义状态条样式，会合并覆盖默认样式 */
+    style?: Partial<CSSStyleDeclaration>
+  }
 }
 
 export interface Widget {

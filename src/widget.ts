@@ -75,6 +75,7 @@ export function createWidget(options: WidgetOptions): Widget {
     transitionType,
     primaryColor = 'rgba(96,165,250,0.9)',
     menus: menusOptions,
+    statusBar: statusBarOptions,
   } = options;
 
   const models = Array.isArray(options.model) ? options.model : [options.model];
@@ -100,7 +101,7 @@ export function createWidget(options: WidgetOptions): Widget {
   container.appendChild(canvas);
   document.body.appendChild(container);
 
-  const statusBar = createStatusBar(position, transitionDuration, height, primaryColor);
+  const statusBar = createStatusBar(position, transitionDuration, height, primaryColor, statusBarOptions?.style);
   document.body.appendChild(statusBar.el);
 
   let l2dInstance = init(canvas);
@@ -168,6 +169,7 @@ export function createWidget(options: WidgetOptions): Widget {
       tips = createTips(primaryColor, {
         offset: tipsOpts?.offset,
         typing: tipsOpts?.typing,
+        style: tipsOpts?.style,
       });
       container.appendChild(tips.el);
     }
@@ -244,6 +246,7 @@ export function createWidget(options: WidgetOptions): Widget {
   menu = createMenu(resolveMenuItems(models, menusOptions), widget, {
     align: menusOptions?.align,
     primaryColor,
+    style: menusOptions?.style,
   });
   container.appendChild(menu.el);
   cancelHover = setupMenuHover(canvas, menu);

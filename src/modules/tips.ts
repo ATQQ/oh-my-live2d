@@ -26,6 +26,7 @@ export interface TipsConfig {
     minValue?: number
     maxValue?: number
   }
+  style?: Partial<CSSStyleDeclaration>
 }
 
 export interface TipsHandle {
@@ -38,7 +39,7 @@ export interface TipsHandle {
 export function createTips(primaryColor: string, config?: TipsConfig): TipsHandle {
   ensureTipsStyle();
 
-  const { offset, typing } = config ?? {};
+  const { offset, typing, style } = config ?? {};
   const ox = offset?.x ?? 0;
   const oy = offset?.y ?? 0;
   const mouthParam = typing?.param;
@@ -78,6 +79,9 @@ export function createTips(primaryColor: string, config?: TipsConfig): TipsHandl
     opacity: '0',
     whiteSpace: 'nowrap',
   });
+
+  if (style)
+    Object.assign(inner.style, style);
 
   const arrow = document.createElement('div');
   Object.assign(arrow.style, {
