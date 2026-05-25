@@ -12,6 +12,9 @@
 
 [Documentation](https://l2d-widget.hacxy.cn) | [中文](./README.zh.md)
 
+> [!IMPORTANT]
+> This project is a full rewrite of [oh-my-live2d](https://github.com/hacxy/oh-my-live2d) based on the [l2d](https://github.com/hacxy/l2d) library. The original `oh-my-live2d` has been renamed to **l2d-widget**. If you are migrating from `oh-my-live2d`, please refer to the [documentation](https://l2d-widget.hacxy.cn) for the updated API.
+
 ## Features
 
 - **Single-call integration** — `createWidget()` handles canvas creation, WebGL context initialization, model loading, and interaction bindng in one call

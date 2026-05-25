@@ -12,6 +12,9 @@
 
 [文档](https://l2d-widget.hacxy.cn) | [English](./README.md)
 
+> [!IMPORTANT]
+> 本项目是基于 [l2d](https://github.com/hacxy/l2d) 库对 [oh-my-live2d](https://github.com/hacxy/oh-my-live2d) 的完全重构版本，原 `oh-my-live2d` 已更名为 **l2d-widget**。如果你正在从 `oh-my-live2d` 迁移，请查阅[文档站](https://l2d-widget.hacxy.cn)了解更新后的 API。
+
 ## 特性
 
 - **单次调用集成** — `createWidget()` 一个函数完成 canvas 创建、WebGL 上下文初始化、模型加载与交互绑定
